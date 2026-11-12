@@ -87,6 +87,22 @@ pipeline {
                 }
             }
         }
+        stage('Deploy exam-app') {
+            when { branch 'main' }
+            steps {
+                sh '''
+                    set -eu
+                    docker compose up --pull never --wait --wait-timeout 30 app
+                    response=$(curl -fsS --max-time 5 http://127.0.0.1:8080/)
+                    printf '%s\n' "$response" | python3 ci/check-version.py "$BUILD_NUMBER"
+                '''
+            }
+            post {
+                failure {
+                    sh 'docker compose logs --tail 50 app'
+                }
+            }
+        }
     }
     post {
         always {
