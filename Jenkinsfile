@@ -55,5 +55,48 @@ pipeline {
                 sh 'bash ci/check-health.sh "jenkins-exam:$IMAGE_TAG"'
             }
         }
+        stage('Publish to Docker Hub') {
+            steps {
+                script {
+                    env.HUB_AUTH_DIR = "${pwd(tmp: true)}/dockerhub-${env.BUILD_NUMBER}"
+                }
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-jenkins-exam',
+                    usernameVariable: 'HUB_USER',
+                    passwordVariable: 'HUB_TOKEN'
+                )]) {
+                    sh '''
+                        set +x
+                        set -eu
+                        export DOCKER_CONFIG="$HUB_AUTH_DIR"
+                        umask 077
+                        mkdir -p "$DOCKER_CONFIG"
+
+                        printf '%s' "$HUB_TOKEN" | docker login --username "$HUB_USER" --password-stdin
+
+                        repo=ezrasaar/jenkins-exam
+                        docker tag "jenkins-exam:$IMAGE_TAG" "$repo:$IMAGE_TAG"
+                        docker push "$repo:$IMAGE_TAG"
+
+                        if [ "$BRANCH_NAME" = main ]; then
+                            docker tag "$repo:$IMAGE_TAG" "$repo:latest"
+                            docker push "$repo:latest"
+                        fi
+                    '''
+                }
+            }
+        }
+    }
+    post {
+        always {
+            sh '''
+                if [ -n "${HUB_AUTH_DIR:-}" ] && [ -d "$HUB_AUTH_DIR" ]; then
+                    export DOCKER_CONFIG="$HUB_AUTH_DIR"
+                    trap 'rm -rf -- "$DOCKER_CONFIG"' EXIT
+                    docker logout
+                fi
+            '''
+        }
     }
 }
