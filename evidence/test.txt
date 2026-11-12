@@ -1,0 +1,144 @@
+Branch indexing
+ > git rev-parse --resolve-git-dir /var/jenkins_home/caches/git-6e8a1bda09650a9fb2df038651b5f775/.git # timeout=10
+Setting origin to https://github.com/ezrasaar/jenkins-exam.git
+ > git config remote.origin.url https://github.com/ezrasaar/jenkins-exam.git # timeout=10
+Fetching origin...
+Fetching upstream changes from origin
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git config --get remote.origin.url # timeout=10
+ > git fetch --no-tags --force --progress -- origin +refs/heads/*:refs/remotes/origin/* # timeout=10
+Seen branch in repository origin/dev
+Seen branch in repository origin/main
+Seen branch in repository origin/test
+Seen 3 remote branches
+Obtained Jenkinsfile from bf4924f0b62d242680d829f2020480c0baf5366b
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on ubuntu-docker-agent in /home/jenkins/agent/workspace/jenkins-exam_test
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Fetching changes from the remote Git repository
+Fetching without tags
+Checking out Revision bf4924f0b62d242680d829f2020480c0baf5366b (test)
+Commit message: "Run the test image on the test branch"
+ > git rev-parse --resolve-git-dir /home/jenkins/agent/workspace/jenkins-exam_test/.git # timeout=10
+ > git config remote.origin.url https://github.com/ezrasaar/jenkins-exam.git # timeout=10
+Fetching upstream changes from https://github.com/ezrasaar/jenkins-exam.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.53.0'
+ > git fetch --no-tags --force --progress -- https://github.com/ezrasaar/jenkins-exam.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f bf4924f0b62d242680d829f2020480c0baf5366b # timeout=10
+ > git rev-list --no-walk 8d48a56f24c91907a96f45d1f7e7caea71da2b2d # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Select Docker target)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Branch test builds Docker stage test
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker image)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ docker build --target test --build-arg APP_VERSION=2 -t jenkins-exam:test-2 .
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.08kB 0.0s done
+#1 DONE 0.0s
+
+#2 [auth] library/python:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.14-slim
+#3 DONE 1.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 107B done
+#4 DONE 0.0s
+
+#5 [builder 1/5] FROM docker.io/library/python:3.14-slim@sha256:9aaa474097d094040649f2162a627c0049b408f52138d980916788d80f04802f
+#5 resolve docker.io/library/python:3.14-slim@sha256:9aaa474097d094040649f2162a627c0049b408f52138d980916788d80f04802f 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 183B done
+#6 DONE 0.0s
+
+#7 [test 1/2] COPY tests/ ./tests/
+#7 CACHED
+
+#8 [builder 2/5] WORKDIR /build
+#8 CACHED
+
+#9 [builder 4/5] RUN python -m venv /opt/venv
+#9 CACHED
+
+#10 [builder 5/5] RUN python -m pip install --no-cache-dir -r requirements.txt
+#10 CACHED
+
+#11 [dev 1/3] WORKDIR /app
+#11 CACHED
+
+#12 [dev 2/3] RUN python -m pip install --no-cache-dir pytest
+#12 CACHED
+
+#13 [dev 3/3] COPY app/ ./app/
+#13 CACHED
+
+#14 [builder 3/5] COPY requirements.txt .
+#14 CACHED
+
+#15 [test 2/2] RUN python -m pytest -v tests/
+#15 CACHED
+
+#16 exporting to image
+#16 exporting layers done
+#16 exporting manifest sha256:cec7dbe74716c88d6a3d617b9dcdd9db632364536df6e13eb9a3230daa7cc9fe done
+#16 exporting config sha256:645d7409b71f80031e947625fbbde711a22b61a88e5fecfc2eb5e4e069215827 done
+#16 exporting attestation manifest sha256:a2fc31e4dfc5c803a89529862f61926ec6c369f605c879123ebbcb5a047290c6 done
+#16 exporting manifest list sha256:c693c9d9856029f6479dcbf8ab234a126572d4fa82da21ed74105f0a824478a4 0.0s done
+#16 naming to docker.io/library/jenkins-exam:test-2 done
+#16 unpacking to docker.io/library/jenkins-exam:test-2 done
+#16 DONE 0.1s
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run test image)
+[Pipeline] sh
++ docker run --rm jenkins-exam:test-2
+============================= test session starts ==============================
+platform linux -- Python 3.14.10, pytest-9.2.0, pluggy-1.7.0 -- /opt/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /app
+collecting ... collected 2 items
+
+tests/test_web.py::WebTests::test_app_info PASSED                        [ 50%]
+tests/test_web.py::WebTests::test_health PASSED                          [100%]
+
+============================== 2 passed in 0.11s ===============================
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

@@ -44,5 +44,16 @@ pipeline {
                 sh 'docker run --rm "jenkins-exam:$IMAGE_TAG"'
             }
         }
+        stage('Check application health') {
+            when {
+                anyOf {
+                    branch 'dev'
+                    branch 'main'
+                }
+            }
+            steps {
+                sh 'bash ci/check-health.sh "jenkins-exam:$IMAGE_TAG"'
+            }
+        }
     }
 }
