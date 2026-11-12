@@ -38,5 +38,11 @@ pipeline {
                 sh 'docker build --target "$DOCKER_TARGET" --build-arg "APP_VERSION=$BUILD_NUMBER" -t "jenkins-exam:$IMAGE_TAG" .'
             }
         }
+        stage('Run test image') {
+            when { branch 'test' }
+            steps {
+                sh 'docker run --rm "jenkins-exam:$IMAGE_TAG"'
+            }
+        }
     }
 }
