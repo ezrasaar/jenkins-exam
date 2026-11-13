@@ -12,6 +12,13 @@ Jenkins builds and tests a small Flask app. Changes merged into `main` are deplo
 
 ## Branches
 
+| Branch | Docker stage |
+| --- | --- |
+| main | final |
+| test | test |
+| dev | dev |
+| feature/* | dev |
+
 - `dev` builds the development image and checks that `/health` returns HTTP 200.
 - `feature/*` builds the same Docker stage as `dev`.
 - `test` runs the unit tests during the build and again inside a container. A failed test stops the pipeline.
