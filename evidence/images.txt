@@ -1,0 +1,3 @@
+REPOSITORY     TAG       SIZE
+jenkins-exam   dev       235MB
+jenkins-exam   final     207MB

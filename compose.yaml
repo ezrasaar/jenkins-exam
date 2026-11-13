@@ -1,0 +1,9 @@
+name: jenkins-exam-deploy
+
+services:
+  app:
+    image: "ezrasaar/jenkins-exam:main-${BUILD_NUMBER:?BUILD_NUMBER is required}"
+    container_name: exam-app
+    ports:
+      - "8080:8000"
+    restart: unless-stopped
