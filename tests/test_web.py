@@ -8,7 +8,7 @@ class WebTests(unittest.TestCase):
         client = app.test_client()
         response = client.get("/health")
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), {"status": "ok"})
 
     def test_app_info(self):
